@@ -3,4 +3,4 @@ openai
 twilio
 python-dotenv
 pandas
-TTS
+TTS==0.17.3
