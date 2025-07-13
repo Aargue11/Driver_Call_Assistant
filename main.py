@@ -17,7 +17,8 @@ drivers_df = pd.read_excel("drivers.xlsx")
 print("Enter Load Information:")
 pickup = input("Pickup Location: ")
 delivery = input("Delivery Location: ")
-window_time = input("Delivery Window Time: ")
+PU_window_time = input("Pickup Window Time: ")
+DEL_window_time = input("Delivery Window time: ")
 miles = input("Total Miles: ")
 actual_payment = input("Actual Payment: ")
 max_payment = input("Maximum Payment: ")
@@ -35,10 +36,10 @@ def commit_audio(filepath):
 def generar_script(driver_name, vehicle_type):
     return (
         f"Hello {driver_name}, this is a quick load offer for your {vehicle_type}."
-        f"The pickup is in {pickup} and the delivery is in {delivery}."
-        f"The window for delivery is {window_time}, and it’s about {miles} miles."
+        f"The pickup is in {pickup}, and the delivery is in {delivery}. the trip its about {miles} miles."
+        f"The pickup time is from {PU_window_time}, and the delivery time is from {DEL_window_time}."
         f"We are offering ${actual_payment}, but it is negotiable up to ${max_payment}."
-        f"If oyu are interested please say Yes, otherwise say No. Thanks!"
+        f"If you are interested please say  YES, otherwise say  NO.  Thanks!"
     )
 
 # Loop de llamadas
@@ -54,7 +55,7 @@ for index, row in drivers_df.iterrows():
 
     commit_audio(audio_path)
 
-    audio_url = f"https://gpt-audio-bot.onrender.com/audio/{filename}.mp3"
+    audio_url = f"https://driver-call-assistant.onrender.com/audio/{filename}.mp3"
 
     print(f"📞 Llamando a {name} con audio: {audio_url}")
     call = client.calls.create(
