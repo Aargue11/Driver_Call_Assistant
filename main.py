@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from twilio.rest import Client
 from tts_engine import generar_audio
 from git import Repo
+import subprocess
 
 # Config
 load_dotenv()
@@ -41,24 +42,11 @@ miles = input("Total Miles: ")
 actual_payment = input("Actual Payment: ")
 max_payment = input("Maximum Payment: ")
 
-# Git auto-commit
-def commit_audio(filepath):
-    repo = Repo(".")
-    repo.git.add(filepath)
-    repo.index.commit(f"Add audio {filepath}")
-    origin = repo.remote(name='origin')
-    origin.push()
-    print(f"✅ Subido a GitHub: {filepath}")
-
-# Script estático
-def generar_script(driver_name, vehicle_type):
-    return (
-        f"Hello {driver_name}, this is a quick load offer for your {vehicle_type}. "
-        f"The pickup is in {pickup}, and the delivery is in {delivery}. The trip is about {miles} miles. "
-        f"The pickup time is from {PU_window_time}, and the delivery time is from {DEL_window_time}. "
-        f"We are offering {actual_payment} dollars, but it is negotiable up to {max_payment} dollars. "
-        f"If you are interested, please say YES; otherwise, say NO. Thanks!"
-    )
+# Función deploy a Netlify
+def deploy_netlify():
+    print("🚀 Haciendo deploy a Netlify...")
+    subprocess.run([r"C:\Users\Alejandro Argüello G\AppData\Roaming\npm\netlify.cmd", "deploy", "--prod", "--dir=audio_static"], check=True)
+    print("✅ Deploy completado!")
 
 # Loop de llamadas
 for index, row in drivers_df.iterrows():
@@ -69,12 +57,35 @@ for index, row in drivers_df.iterrows():
     filename = f"{clean(name)}_{pickup}_{delivery}"
 
     print(f"\n🎙️ Generando audio para {name}...")
-    texto = generar_script(name, vehicle)
+    texto = (
+        f"Hello {name}, this is a quick load offer for your {vehicle}. "
+        f"The pickup is in {pickup}, and the delivery is in {delivery}. The trip is about {miles} miles. "
+        f"The pickup time is from {PU_window_time}, and the delivery time is from {DEL_window_time}. "
+        f"We are offering {actual_payment} dollars, but it is negotiable up to {max_payment} dollars. "
+        f"If you are interested, please say YES; otherwise, say NO. Thanks!"
+    )
+
+    # Generar audio y guardar en carpeta audio_static
     audio_path = generar_audio(filename, texto)
 
-    commit_audio(audio_path)
+    # Commit opcional (si quieres seguir usando GitHub)
+    # repo = Repo(".")
+    # repo.git.add(audio_path)
+    # repo.index.commit(f"Add audio {audio_path}")
+    # origin = repo.remote(name='origin')
+    # origin.push()
+    # print(f"✅ Subido a GitHub: {audio_path}")
 
-    audio_url = f"https://driver-call-assistant.onrender.com/audio/{filename}.mp3"
+# 🚀 Deploy Netlify después de generar todos los audios
+deploy_netlify()
+
+# 🔥 Hacer llamadas Twilio usando Netlify
+for index, row in drivers_df.iterrows():
+    name = row['Name']
+    phone = row['Phone']
+
+    filename = f"{clean(name)}_{pickup}_{delivery}"
+    audio_url = f"https://drivercallassistant.netlify.app/{filename}.mp3"
 
     print(f"📞 Llamando a {name} con audio: {audio_url}")
     call = client.calls.create(

@@ -9,8 +9,8 @@ os.makedirs("static/audio", exist_ok=True)
 tts = TTS(model_name="tts_models/en/ljspeech/tacotron2-DDC", progress_bar=False)
 
 def generar_audio(nombre_archivo, texto):
-    ruta_raw = f"static/audio/{nombre_archivo}_raw.wav"
-    ruta_final = f"static/audio/{nombre_archivo}.mp3"
+    ruta_raw = f"audio_static/{nombre_archivo}_raw.wav"
+    ruta_final = f"audio_static/{nombre_archivo}.mp3"
 
     # Paso 1: Generar archivo con Coqui
     tts.tts_to_file(text=texto, file_path=ruta_raw)
@@ -20,7 +20,9 @@ def generar_audio(nombre_archivo, texto):
         "C:\\ffmpeg\\bin\\ffmpeg.exe", "-y", "-i", ruta_raw,
         "-ac", "1",              # Mono
         "-ar", "16000",          # Frecuencia 16kHz
-        "-sample_fmt", "s16",    # PCM 16-bit
+        "-b:a", "64k",            # CBR 64 kbps (seguro para Twilio y navegador)
+        "-codec:a", "libmp3lame",
+        "-f", "mp3",
         ruta_final
     ], check=True)
 
