@@ -14,11 +14,29 @@ client = Client(twilio_sid, twilio_token)
 
 drivers_df = pd.read_excel("drivers.xlsx")
 
+# Función para limpiar nombres de archivo
+def clean(text):
+    return (
+        text.lower()
+        .replace(' ', '_')
+        .replace(',', '')
+        .replace('.', '')
+        .replace(':', '')
+        .replace(';', '')
+        .replace('?', '')
+        .replace('!', '')
+        .replace('á', 'a')
+        .replace('é', 'e')
+        .replace('í', 'i')
+        .replace('ó', 'o')
+        .replace('ú', 'u')
+    )
+
 print("Enter Load Information:")
-pickup = input("Pickup Location: ")
-delivery = input("Delivery Location: ")
+pickup = clean(input("Pickup Location: "))
+delivery = clean(input("Delivery Location: "))
 PU_window_time = input("Pickup Window Time: ")
-DEL_window_time = input("Delivery Window time: ")
+DEL_window_time = input("Delivery Window Time: ")
 miles = input("Total Miles: ")
 actual_payment = input("Actual Payment: ")
 max_payment = input("Maximum Payment: ")
@@ -35,11 +53,11 @@ def commit_audio(filepath):
 # Script estático
 def generar_script(driver_name, vehicle_type):
     return (
-        f"Hello {driver_name}, this is a quick load offer for your {vehicle_type}."
-        f"The pickup is in {pickup}, and the delivery is in {delivery}. the trip its about {miles} miles."
-        f"The pickup time is from {PU_window_time}, and the delivery time is from {DEL_window_time}."
-        f"We are offering ${actual_payment}, but it is negotiable up to ${max_payment}."
-        f"If you are interested please say  YES, otherwise say  NO.  Thanks!"
+        f"Hello {driver_name}, this is a quick load offer for your {vehicle_type}. "
+        f"The pickup is in {pickup}, and the delivery is in {delivery}. The trip is about {miles} miles. "
+        f"The pickup time is from {PU_window_time}, and the delivery time is from {DEL_window_time}. "
+        f"We are offering {actual_payment} dollars, but it is negotiable up to {max_payment} dollars. "
+        f"If you are interested, please say YES; otherwise, say NO. Thanks!"
     )
 
 # Loop de llamadas
@@ -47,7 +65,8 @@ for index, row in drivers_df.iterrows():
     name = row['Name']
     phone = row['Phone']
     vehicle = row['Vehicle']
-    filename = f"{name.lower().replace(' ', '_')}_{pickup.lower()}_{delivery.lower()}"
+
+    filename = f"{clean(name)}_{pickup}_{delivery}"
 
     print(f"\n🎙️ Generando audio para {name}...")
     texto = generar_script(name, vehicle)
