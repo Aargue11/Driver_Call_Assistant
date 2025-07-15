@@ -85,7 +85,7 @@ for index, row in drivers_df.iterrows():
     phone = row['Phone']
 
     filename = f"{clean(name)}_{pickup}_{delivery}"
-    audio_url = f"https://drivercallassistant.netlify.app/{filename}.mp3"
+    audio_url = f"https://dcassistant.netlify.app/{filename}.mp3"
 
     print(f"📞 Llamando a {name} con audio: {audio_url}")
     call = client.calls.create(

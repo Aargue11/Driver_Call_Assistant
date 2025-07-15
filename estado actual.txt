@@ -1,0 +1,5 @@
+13 de Julio
+
+Se está usando netlify para guardar los archivos de audio en un repositorio online que permita streaming
+el robot los está subiendo correctamente igual que con render, pero no suena audio y no los reproduce twilio, dide que un error ha ocurrido. 
+sin embargo twillio si llama. 
