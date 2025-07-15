@@ -44,9 +44,16 @@ max_payment = input("Maximum Payment: ")
 
 # Función deploy a Netlify
 def deploy_netlify():
-    print("🚀 Haciendo deploy a Netlify...")
-    subprocess.run([r"C:\Users\Alejandro Argüello G\AppData\Roaming\npm\netlify.cmd", "deploy", "--prod", "--dir=audio_static"], check=True)
-    print("✅ Deploy completado!")
+    print("🚀 Haciendo deploy a Netlify automático...")
+    token = os.getenv("NETLIFY_AUTH_TOKEN")
+    subprocess.run([
+        r"C:\Users\Alejandro Argüello G\AppData\Roaming\npm\netlify.cmd",
+        "deploy",
+        "--prod",
+        "--dir=audio_static",
+        f"--auth={token}"
+    ], check=True)
+    print("✅ Deploy completado correctamente y listo para Twilio!")
 
 # Loop de llamadas
 for index, row in drivers_df.iterrows():
